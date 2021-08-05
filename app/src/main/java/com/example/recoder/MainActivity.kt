@@ -11,6 +11,9 @@ import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
 
+    private val visualizedView: SoundVisualizedView by lazy {
+        findViewById(R.id.soundvisuallizer)
+    }
     private val resetButton: Button by lazy {
         findViewById(R.id.resetbutton)
     }
@@ -73,6 +76,9 @@ class MainActivity : AppCompatActivity() {
 
     //앱에 스테이트에 따른 유아이 구성 완료 --> 동작 구성 -->onclick listener을 받아야한다..
     private fun bindViews() {
+        visualizedView.onRequestCurrentAmplitude = {
+            recorder?.maxAmplitude ?: 0
+        }
         resetButton.setOnClickListener {
             stopPlaying()
             state = State.BEFORE_RECODING

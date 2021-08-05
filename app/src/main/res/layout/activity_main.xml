@@ -8,6 +8,7 @@
 
     <com.example.recoder.SoundVisualizedView
         android:layout_width="0dp"
+        android:id="@+id/soundvisuallizer"
         android:layout_height="0dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintLeft_toLeftOf="parent"

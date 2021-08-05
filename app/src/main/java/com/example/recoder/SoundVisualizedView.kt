@@ -13,6 +13,8 @@ class SoundVisualizedView(
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
+    var onRequestCurrentAmplitude : (()-> Int)? = null
+
     val amplitudePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = context.getColor(R.color.purple_500)
         strokeWidth = LINE_WIDTH
