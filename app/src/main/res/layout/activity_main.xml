@@ -28,7 +28,7 @@
         tools:ignore="HardcodedText" />
 
 
-    <TextView
+    <com.example.recoder.CountUpView
         android:id="@+id/recordTimeTextview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

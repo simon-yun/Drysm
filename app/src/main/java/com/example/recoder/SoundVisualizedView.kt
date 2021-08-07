@@ -13,7 +13,8 @@ class SoundVisualizedView(
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
-    var onRequestCurrentAmplitude : (()-> Int)? = null
+    // 이게 함수여??? 파라미터를 보내서 ,,
+    var onRequestCurrentAmplitude: (() -> Int)? = null
 
     val amplitudePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = context.getColor(R.color.purple_500)
@@ -25,18 +26,23 @@ class SoundVisualizedView(
     var drawingAmplitudes: List<Int> = emptyList()
     // (0..10).map { Random.nextInt(Short.MAX_VALUE.toInt()) }
     //emptyList()
+    private var isReplaying: Boolean =false
+    private var replayingPosition: Int = 0
 
-    private val visualizedRepeatAction: Runnable = object :Runnable {
+    private val visualizedRepeatAction: Runnable = object : Runnable {
 
-        override  fun run() {
+        override fun run() {
             //Amplitude , Draw
-
-
-
+            if(!isReplaying){
+                val currentAmplitude = onRequestCurrentAmplitude?.invoke() ?: 0
+                drawingAmplitudes = listOf(currentAmplitude) + drawingAmplitudes
+            } else {
+                replayingPosition++
+            }
+            invalidate()  // 이걸 호출해야  온드로우를 다시 호출하게 됨 이걸 추가하지 않으면 뷰가 계속 그 상태를 유지함
             handler?.postDelayed(this, ACTION_INTERVAL)
         }
     }
-
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -54,7 +60,15 @@ class SoundVisualizedView(
         val centerY = drawingHeigh / 2f
         var offsetX = drawingWidth.toFloat()
 
-        drawingAmplitudes.forEach { amplitude ->
+        drawingAmplitudes
+            .let { amplitudes ->
+                if(isReplaying) {
+                    amplitudes.takeLast(replayingPosition)
+                } else {
+                    amplitudes
+                }
+            }
+            .forEach { amplitude ->
             val lineLength = amplitude / MAX_AMPLITUDE * drawingHeigh * 0.8F
             offsetX -= LINE_SPACE
             if (offsetX < 0) return@forEach
@@ -67,10 +81,16 @@ class SoundVisualizedView(
                 amplitudePaint
             )
         }
-
-
     }
 
+    fun startVisualizing(isReplaying: Boolean) {
+        this.isReplaying = isReplaying
+        handler?.post (visualizedRepeatAction)
+    }
+
+    fun stopVisualizing() {
+        handler?.removeCallbacks(visualizedRepeatAction)
+    }
 
     companion object {
         private const val LINE_WIDTH = 10F
