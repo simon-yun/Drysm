@@ -10,6 +10,11 @@ class RecordButton (
     attrs: AttributeSet
 ): AppCompatImageButton(context, attrs) {
 
+    //shape drawble 재생산성을 높이기 위해서 init 안에 넣는다
+    init {
+        setBackgroundResource(R.drawable.shape_oval_button)
+    }
+
 fun updateIconWithState(state: State) {
     when(state) {
         State.BEFORE_RECODING ->{

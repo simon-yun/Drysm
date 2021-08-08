@@ -24,16 +24,17 @@ class SoundVisualizedView(
     var drawingWidth: Int = 0
     var drawingHeigh: Int = 0
     var drawingAmplitudes: List<Int> = emptyList()
+
     // (0..10).map { Random.nextInt(Short.MAX_VALUE.toInt()) }
     //emptyList()
-    private var isReplaying: Boolean =false
+    private var isReplaying: Boolean = false
     private var replayingPosition: Int = 0
 
     private val visualizedRepeatAction: Runnable = object : Runnable {
 
         override fun run() {
             //Amplitude , Draw
-            if(!isReplaying){
+            if (!isReplaying) {
                 val currentAmplitude = onRequestCurrentAmplitude?.invoke() ?: 0
                 drawingAmplitudes = listOf(currentAmplitude) + drawingAmplitudes
             } else {
@@ -62,34 +63,40 @@ class SoundVisualizedView(
 
         drawingAmplitudes
             .let { amplitudes ->
-                if(isReplaying) {
+                if (isReplaying) {
                     amplitudes.takeLast(replayingPosition)
                 } else {
                     amplitudes
                 }
             }
             .forEach { amplitude ->
-            val lineLength = amplitude / MAX_AMPLITUDE * drawingHeigh * 0.8F
-            offsetX -= LINE_SPACE
-            if (offsetX < 0) return@forEach
+                val lineLength = amplitude / MAX_AMPLITUDE * drawingHeigh * 0.8F
+                offsetX -= LINE_SPACE
+                if (offsetX < 0) return@forEach
 
-            canvas.drawLine(
-                offsetX,
-                centerY - lineLength / 2f,
-                offsetX,
-                centerY + lineLength / 2f,
-                amplitudePaint
-            )
-        }
+                canvas.drawLine(
+                    offsetX,
+                    centerY - lineLength / 2f,
+                    offsetX,
+                    centerY + lineLength / 2f,
+                    amplitudePaint
+                )
+            }
     }
 
     fun startVisualizing(isReplaying: Boolean) {
         this.isReplaying = isReplaying
-        handler?.post (visualizedRepeatAction)
+        handler?.post(visualizedRepeatAction)
     }
 
     fun stopVisualizing() {
+        replayingPosition = 0
         handler?.removeCallbacks(visualizedRepeatAction)
+    }
+
+    fun clearVisualization() {
+        drawingAmplitudes = emptyList()
+        invalidate()
     }
 
     companion object {
